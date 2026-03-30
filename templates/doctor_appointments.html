@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block title %}My Patients - Doctor{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2><i class="bi bi-clipboard2-pulse"></i> My Patients</h2>
+        <a href="{{ url_for('doctor_dashboard') }}" class="btn btn-outline-dark btn-sm">Back to Dashboard</a>
+    </div>
+    <hr>
+
+    <!-- Filter Tabs -->
+    <ul class="nav nav-tabs mb-3">
+        <li class="nav-item">
+            <a class="nav-link {% if current_filter == 'All' %}active{% endif %}" href="{{ url_for('doctor_appointments', status='All') }}">All</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if current_filter == 'Scheduled' %}active{% endif %}" href="{{ url_for('doctor_appointments', status='Scheduled') }}">Scheduled</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if current_filter == 'Completed' %}active{% endif %}" href="{{ url_for('doctor_appointments', status='Completed') }}">Completed</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if current_filter == 'Cancelled' %}active{% endif %}" href="{{ url_for('doctor_appointments', status='Cancelled') }}">Cancelled</a>
+        </li>
+    </ul>
+
+    {% if appointments %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover table-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>Receipt #</th>
+                    <th>Patient</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Gender</th>
+                    <th>Blood</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Disease</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for apt in appointments %}
+                <tr>
+                    <td>{{ apt.receipt_no }}</td>
+                    <td>{{ apt.patient_name }}</td>
+                    <td>{{ apt.patient_email }}</td>
+                    <td>{{ apt.patient_phone }}</td>
+                    <td>{{ apt.patient_gender }}</td>
+                    <td>{{ apt.patient_blood }}</td>
+                    <td>{{ apt.appointment_date }}</td>
+                    <td>{{ apt.time_slot }}</td>
+                    <td>{{ apt.disease or '-' }}</td>
+                    <td>
+                        {% if apt.status == 'Scheduled' %}
+                            <span class="badge bg-info">Scheduled</span>
+                        {% elif apt.status == 'Completed' %}
+                            <span class="badge bg-success">Completed</span>
+                        {% else %}
+                            <span class="badge bg-danger">Cancelled</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#rxModal{{ apt.id }}">
+                            <i class="bi bi-pencil-square"></i> Rx
+                        </button>
+                    </td>
+                </tr>
+
+                <!-- Prescription Modal -->
+                <div class="modal fade" id="rxModal{{ apt.id }}" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form method="POST" action="{{ url_for('prescribe', apt_id=apt.id) }}">
+                                <div class="modal-header bg-primary text-white">
+                                    <h5 class="modal-title">Prescribe — {{ apt.patient_name }}</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    {% if apt.symptoms %}
+                                    <div class="alert alert-info"><strong>Symptoms:</strong> {{ apt.symptoms }}</div>
+                                    {% endif %}
+                                    <div class="mb-3">
+                                        <label class="form-label">Prescription / Notes</label>
+                                        <textarea class="form-control" name="prescription" rows="4" required>{{ apt.prescription or '' }}</textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Status</label>
+                                        <select class="form-select" name="status">
+                                            <option value="Completed" {% if apt.status == 'Completed' %}selected{% endif %}>Completed</option>
+                                            <option value="Scheduled" {% if apt.status == 'Scheduled' %}selected{% endif %}>Scheduled</option>
+                                            <option value="Cancelled" {% if apt.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <div class="alert alert-light">No appointments found.</div>
+    {% endif %}
+</div>
+{% endblock %}

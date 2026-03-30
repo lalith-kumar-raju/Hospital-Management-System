@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block title %}Book Appointment - HealthCare HMS{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2><i class="bi bi-calendar-plus"></i> Book by Doctor</h2>
+    <p class="text-muted">Select a doctor, pick a date, and choose an available time slot.</p>
+    <hr>
+    <div class="row">
+        <div class="col-md-8">
+            <form id="bookForm" method="POST" action="{{ url_for('book_appointment') }}">
+                <div class="mb-3">
+                    <label for="doctor_id" class="form-label">Select Doctor</label>
+                    <select class="form-select" id="doctor_id" name="doctor_id" required>
+                        <option value="">-- Choose a Doctor --</option>
+                        {% for doc in doctors %}
+                        <option value="{{ doc.id }}">Dr. {{ doc.full_name }} — {{ doc.specialization }} ({{ doc.experience }} yrs exp)</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="appointment_date" class="form-label">Appointment Date</label>
+                    <input type="date" class="form-control" id="appointment_date" name="appointment_date" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Available Time Slots</label>
+                    <div id="slotsContainer" class="d-flex flex-wrap gap-2">
+                        <p class="text-muted">Select a doctor and date to see available slots.</p>
+                    </div>
+                    <input type="hidden" id="time_slot" name="time_slot" required>
+                </div>
+                <div class="mb-3">
+                    <label for="symptoms" class="form-label">Symptoms / Notes (optional)</label>
+                    <textarea class="form-control" id="symptoms" name="symptoms" rows="3" placeholder="Describe your symptoms..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" id="bookBtn" disabled>Book Appointment</button>
+                <a href="{{ url_for('book_by_disease') }}" class="btn btn-outline-secondary ms-2">Book by Disease Instead</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    // Load slots when doctor and date are selected
+    function loadSlots() {
+        var doctorId = $('#doctor_id').val();
+        var date = $('#appointment_date').val();
+        if (doctorId && date) {
+            $.ajax({
+                url: '{{ url_for("get_slots") }}',
+                data: { doctor_id: doctorId, date: date },
+                success: function(slots) {
+                    var html = '';
+                    slots.forEach(function(s) {
+                        if (s.booked) {
+                            html += '<button type="button" class="btn btn-sm btn-outline-secondary" disabled><s>' + s.slot + '</s></button>';
+                        } else {
+                            html += '<button type="button" class="btn btn-sm btn-outline-primary slot-btn" data-slot="' + s.slot + '">' + s.slot + '</button>';
+                        }
+                    });
+                    if (!html) html = '<p class="text-muted">No slots available.</p>';
+                    $('#slotsContainer').html(html);
+                    $('#time_slot').val('');
+                    $('#bookBtn').prop('disabled', true);
+                }
+            });
+        }
+    }
+
+    $('#doctor_id, #appointment_date').on('change', loadSlots);
+
+    // Slot selection
+    $(document).on('click', '.slot-btn', function() {
+        $('.slot-btn').removeClass('btn-primary').addClass('btn-outline-primary');
+        $(this).removeClass('btn-outline-primary').addClass('btn-primary');
+        $('#time_slot').val($(this).data('slot'));
+        $('#bookBtn').prop('disabled', false);
+    });
+
+    // Set min date to today
+    var today = new Date().toISOString().split('T')[0];
+    $('#appointment_date').attr('min', today);
+});
+</script>
+{% endblock %}

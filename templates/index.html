@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% block title %}HealthCare HMS - Home{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-5 fw-bold">Welcome to HealthCare HMS</h1>
+                <p class="lead mt-3">Your trusted partner in health. Book appointments, consult with experienced doctors, and manage your healthcare journey — all in one place.</p>
+                {% if not session.get('user_id') %}
+                    <a href="{{ url_for('register') }}" class="btn btn-light btn-lg mt-2">Get Started</a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg mt-2 ms-2">Login</a>
+                {% else %}
+                    <a href="{{ url_for('book_appointment') }}" class="btn btn-light btn-lg mt-2">Book Appointment</a>
+                {% endif %}
+            </div>
+            <div class="col-md-4 text-center">
+                <i class="bi bi-hospital" style="font-size: 8rem; opacity: 0.2;"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats -->
+<section class="py-4 stats-section">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-4">
+                <h3 class="fw-bold" style="color: #0d6e6e;">{{ total_doctors }}+</h3>
+                <p class="text-muted">Doctors</p>
+            </div>
+            <div class="col-md-4">
+                <h3 class="fw-bold" style="color: #0d6e6e;">{{ total_patients }}+</h3>
+                <p class="text-muted">Patients Served</p>
+            </div>
+            <div class="col-md-4">
+                <h3 class="fw-bold" style="color: #0d6e6e;">{{ total_services }}+</h3>
+                <p class="text-muted">Services Available</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Services -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-4 section-title">Our Services</h2>
+        <div class="row mt-4">
+            {% for service in services %}
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="service-icon mx-auto">
+                            <i class="bi {{ service.icon }}"></i>
+                        </div>
+                        <h5 class="card-title mt-3">{{ service.name }}</h5>
+                        <p class="card-text text-muted">{{ service.description }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center">
+            <a href="{{ url_for('services') }}" class="btn btn-outline-primary">View All Services</a>
+        </div>
+    </div>
+</section>
+
+<!-- Doctors -->
+{% if doctors %}
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-4 section-title">Our Doctors</h2>
+        <div class="row mt-4">
+            {% for doc in doctors %}
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card h-100 text-center doctor-card">
+                    <div class="card-body">
+                        <i class="bi bi-person-circle text-secondary" style="font-size: 3rem;"></i>
+                        <h5 class="card-title mt-2">Dr. {{ doc.full_name }}</h5>
+                        <p class="text-muted mb-1">{{ doc.specialization }}</p>
+                        <p class="small text-muted">{{ doc.qualification }}</p>
+                        <p class="small">{{ doc.experience }} years experience</p>
+                        <span class="badge bg-success">Available</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- How It Works -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-4 section-title">How It Works</h2>
+        <div class="row text-center mt-4">
+            <div class="col-md-3 mb-3">
+                <div class="step-circle">
+                    1
+                </div>
+                <h5 class="mt-3">Register</h5>
+                <p class="text-muted">Create your account in minutes</p>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="step-circle">
+                    2
+                </div>
+                <h5 class="mt-3">Choose Doctor</h5>
+                <p class="text-muted">Find the right specialist for you</p>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="step-circle">
+                    3
+                </div>
+                <h5 class="mt-3">Book Slot</h5>
+                <p class="text-muted">Pick a convenient date and time</p>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="step-circle">
+                    4
+                </div>
+                <h5 class="mt-3">Get Treated</h5>
+                <p class="text-muted">Visit the doctor and get well</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+{% if not session.get('user_id') %}
+<section class="cta-section text-white py-5">
+    <div class="container text-center">
+        <h3>Ready to take control of your health?</h3>
+        <p class="mt-2">Register now and book your first appointment today!</p>
+        <a href="{{ url_for('register') }}" class="btn btn-light btn-lg mt-2">Register Now</a>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

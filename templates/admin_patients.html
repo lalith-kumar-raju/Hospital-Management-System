@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}All Patients - Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2><i class="bi bi-person-lines-fill"></i> All Patients</h2>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-dark btn-sm">Back</a>
+    </div>
+    <hr>
+
+    {% if patients %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Gender</th>
+                    <th>Blood Group</th>
+                    <th>Appointments</th>
+                    <th>Joined</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in patients %}
+                <tr>
+                    <td>{{ p.full_name }}</td>
+                    <td>{{ p.email }}</td>
+                    <td>{{ p.phone }}</td>
+                    <td>{{ p.gender }}</td>
+                    <td>{{ p.blood_group }}</td>
+                    <td>{{ p.apt_count }}</td>
+                    <td>{{ p.created_at }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <div class="alert alert-light">No patients registered yet.</div>
+    {% endif %}
+</div>
+{% endblock %}

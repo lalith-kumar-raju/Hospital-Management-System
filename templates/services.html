@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Services - HealthCare HMS{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="text-center mb-4 section-title">Our Services</h2>
+    <div class="row mt-4">
+        {% for service in services %}
+        <div class="col-md-3 col-sm-6 mb-4">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <div class="service-icon mx-auto">
+                        <i class="bi {{ service.icon }}"></i>
+                    </div>
+                    <h5 class="card-title mt-3">{{ service.name }}</h5>
+                    <p class="card-text text-muted">{{ service.description }}</p>
+                    {% if session.get('user_id') %}
+                        <a href="{{ url_for('book_appointment') }}" class="btn btn-sm btn-outline-primary">Book Consultation</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% if not services %}
+        <div class="alert alert-info text-center">No services available at the moment.</div>
+    {% endif %}
+</div>
+{% endblock %}

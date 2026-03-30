@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}All Appointments - Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2><i class="bi bi-calendar3"></i> All Appointments</h2>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-dark btn-sm">Back</a>
+    </div>
+    <hr>
+
+    <!-- Filter Tabs -->
+    <ul class="nav nav-tabs mb-3">
+        <li class="nav-item">
+            <a class="nav-link {% if current_filter == 'All' %}active{% endif %}" href="{{ url_for('admin_appointments', status='All') }}">All</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if current_filter == 'Scheduled' %}active{% endif %}" href="{{ url_for('admin_appointments', status='Scheduled') }}">Scheduled</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if current_filter == 'Completed' %}active{% endif %}" href="{{ url_for('admin_appointments', status='Completed') }}">Completed</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if current_filter == 'Cancelled' %}active{% endif %}" href="{{ url_for('admin_appointments', status='Cancelled') }}">Cancelled</a>
+        </li>
+    </ul>
+
+    {% if appointments %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover table-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>Receipt #</th>
+                    <th>Patient</th>
+                    <th>Doctor</th>
+                    <th>Specialization</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for apt in appointments %}
+                <tr>
+                    <td>{{ apt.receipt_no }}</td>
+                    <td>{{ apt.patient_name }}</td>
+                    <td>Dr. {{ apt.doctor_name }}</td>
+                    <td>{{ apt.specialization }}</td>
+                    <td>{{ apt.appointment_date }}</td>
+                    <td>{{ apt.time_slot }}</td>
+                    <td>{{ apt.booking_type }}</td>
+                    <td>
+                        {% if apt.status == 'Scheduled' %}
+                            <span class="badge bg-info">Scheduled</span>
+                        {% elif apt.status == 'Completed' %}
+                            <span class="badge bg-success">Completed</span>
+                        {% else %}
+                            <span class="badge bg-danger">Cancelled</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form method="POST" action="{{ url_for('admin_update_appointment', apt_id=apt.id) }}" class="d-inline">
+                            <select name="status" class="form-select form-select-sm d-inline w-auto">
+                                <option value="Scheduled" {% if apt.status == 'Scheduled' %}selected{% endif %}>Scheduled</option>
+                                <option value="Completed" {% if apt.status == 'Completed' %}selected{% endif %}>Completed</option>
+                                <option value="Cancelled" {% if apt.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-dark">Update</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <div class="alert alert-light">No appointments found.</div>
+    {% endif %}
+</div>
+{% endblock %}

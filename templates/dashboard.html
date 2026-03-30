@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard - HealthCare HMS{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2>Welcome, {{ session.user_name }}!</h2>
+    <hr>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card text-center bg-primary text-white">
+                <div class="card-body">
+                    <h3>{{ total }}</h3>
+                    <p class="mb-0">Total Appointments</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card text-center bg-info text-white">
+                <div class="card-body">
+                    <h3>{{ scheduled }}</h3>
+                    <p class="mb-0">Scheduled</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card text-center bg-success text-white">
+                <div class="card-body">
+                    <h3>{{ completed }}</h3>
+                    <p class="mb-0">Completed</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card text-center bg-danger text-white">
+                <div class="card-body">
+                    <h3>{{ cancelled }}</h3>
+                    <p class="mb-0">Cancelled</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-2">
+            <a href="{{ url_for('book_appointment') }}" class="btn btn-outline-primary w-100">
+                <i class="bi bi-calendar-plus"></i> Book Appointment
+            </a>
+        </div>
+        <div class="col-md-4 mb-2">
+            <a href="{{ url_for('services') }}" class="btn btn-outline-primary w-100">
+                <i class="bi bi-grid"></i> View Services
+            </a>
+        </div>
+        <div class="col-md-4 mb-2">
+            <a href="{{ url_for('my_appointments') }}" class="btn btn-outline-primary w-100">
+                <i class="bi bi-list-check"></i> My Appointments
+            </a>
+        </div>
+    </div>
+
+    <!-- Upcoming Appointments -->
+    <h4>Upcoming Appointments</h4>
+    {% if upcoming %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Doctor</th>
+                        <th>Specialization</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for apt in upcoming %}
+                    <tr>
+                        <td>{{ apt.appointment_date }}</td>
+                        <td>{{ apt.time_slot }}</td>
+                        <td>Dr. {{ apt.doctor_name }}</td>
+                        <td>{{ apt.specialization }}</td>
+                        <td><span class="badge bg-info">{{ apt.status }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-light">No upcoming appointments. <a href="{{ url_for('book_appointment') }}">Book one now!</a></div>
+    {% endif %}
+</div>
+{% endblock %}
