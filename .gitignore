@@ -6,3 +6,5 @@ env/
 # Ignore generated setup scripts and credentials
 seed.py
 credentials.txt
+Hospital_Management_System.pptx
+.gitignore
